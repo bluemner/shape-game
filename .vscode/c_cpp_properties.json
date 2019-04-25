@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include",
+                "L:/SDL2-2.0.5/include",
+                "L:/SDL2-2.0.5/include/SDL2",
+                "C:/Program Files (x86)/Windows Kits/10/Include/10.0.10150.0/ucrt",
+                "C:/Program Files (x86)/Windows Kits/8.1/Include/um/gl"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": "",
+                "path": [
+                    "c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include",
+                    "L:/SDL2-2.0.5/include",
+                    "L:/SDL2-2.0.5/include/SDL2",
+                    "C:/Program Files (x86)/Windows Kits/10/Include/10.0.10150.0/ucrt"
+                ]
+            },
+            "intelliSenseMode": "msvc-x64",
+            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/cl.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

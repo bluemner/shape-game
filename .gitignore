@@ -1,0 +1,37 @@
+#ignore binary folder ( bin )
+bin/
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Pre-compiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executable
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+
+*.pdb

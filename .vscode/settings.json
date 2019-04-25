@@ -1,0 +1,8 @@
+{
+	"files.associations": {
+		"*.cl": "c",
+		"*.tpl": "html",
+		"*.cool": "java",
+		"cmath": "cpp"
+	}
+}
