@@ -208,6 +208,15 @@ void Game::box()
 	glVertex3f(-1.0f, -1.0f, 0.0f); // Bottom Left
 	glEnd();
 }
+void Game::rectangle(){
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glBegin(GL_LINE_LOOP);
+	glVertex3f(-2.5f, 1.0f, 0.0f);	// Top Left
+	glVertex3f(2.5f, 1.0f, 0.0f);		// Top Right
+	glVertex3f(2.5f, -1.0f, 0.0f);	// Bottom Right
+	glVertex3f(-2.5f, -1.0f, 0.0f); // Bottom Left
+	glEnd();
+}
 
 void Game::circle()
 {
@@ -293,6 +302,10 @@ void Game::guest_screen(){
 	glPopMatrix();
 }
 void Game::top_screen(){
+	glPushMatrix();
+	glTranslatef(-0.0f, 1.25f, -6.0f);
+	this->rectangle();
+	glPopMatrix();
 	
 }
 void Game::paint()
@@ -305,7 +318,7 @@ void Game::paint()
 	{
 		this->grid();
 	}
-
+	this->top_screen();
 	this->user_screen();
 	this->guest_screen();
 

@@ -55,6 +55,7 @@ public:
 	void square();
 	void circle();
 	void pentagon();
+	void rectangle();
 	
 	void on_key_up_arrow();
 	void on_key_down_arrow();
