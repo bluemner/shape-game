@@ -4,11 +4,17 @@ namespace betacore
 {
 Game::Game()
 {
+
+	printf("%d\t%d\n", this->MONITOR_WIDTH,this->MONITOR_HEIGHT);
 	if (init())
 	{
 		printf("Error loading init\n");
 		return;
 	}
+	// SDL_DisplayMode DM;
+	// SDL_GetCurrentDisplayMode(0, &DM);
+	this->MONITOR_HEIGHT=1080;
+	this->MONITOR_WIDTH=1920;
 	SDL_Event event;
 
 	while (this->KEEP_ALIVE)
@@ -19,7 +25,9 @@ Game::Game()
 	}
 	close();
 }
-Game::~Game() {}
+Game::~Game() {
+
+}
 
 int Game::init()
 {
@@ -39,13 +47,16 @@ int Game::init()
 
 		//Create window
 		int videoFlags = SDL_WINDOW_OPENGL;
+		//videoFlags |= SDL_WINDOW_FULLSCREEN;
 		videoFlags |= SDL_WINDOW_SHOWN;
 		videoFlags |= SDL_WINDOW_RESIZABLE;
+		//videoFlags |= SDL_WINDOW_BORDERLESS;
+		// videoFlags |= SDL_WINDOW_INPUT_GRABBED;
 
 		this->WINDOW = SDL_CreateWindow(
 				this->TITLE,
-				SDL_WINDOWPOS_UNDEFINED,
-				SDL_WINDOWPOS_UNDEFINED,
+				SDL_WINDOWPOS_CENTERED,
+				SDL_WINDOWPOS_CENTERED,
 				this->SCREEN_WIDTH,
 				this->SCREEN_HEIGHT,
 				videoFlags);
@@ -181,7 +192,15 @@ void Game::grid()
 }
 void Game::triangle()
 {
-	glBegin(GL_POLYGON);						// start drawing a polygon
+	this->triangle(true);
+}
+void Game::triangle(bool filled)
+{
+	glColor3f(1.0f, 0.0f, 0.0f);
+	if (filled)
+		glBegin(GL_POLYGON); // start drawing a polygon
+	else
+		glBegin(GL_LINE_LOOP);
 	glColor3f(1.0f, 0.0f, 0.0f);		// Set The Color To Red
 	glVertex3f(0.0f, 1.0f, 0.0f);		// Top
 	glVertex3f(1.0f, -1.0f, 0.0f);	// Bottom Right
@@ -190,7 +209,15 @@ void Game::triangle()
 }
 void Game::square()
 {
-	glBegin(GL_QUADS);							// start drawing a polygon (4 sided)
+	this->square(true);
+}
+void Game::square(bool filled)
+{
+	glColor3f(0.0f, 0.0f, 1.0f);
+	if (filled)
+		glBegin(GL_QUADS); // start drawing a polygon (4 sided)
+	else
+		glBegin(GL_LINE_LOOP);
 	glVertex3f(-1.0f, 1.0f, 0.0f);	// Top Left
 	glVertex3f(1.0f, 1.0f, 0.0f);		// Top Right
 	glVertex3f(1.0f, -1.0f, 0.0f);	// Bottom Right
@@ -208,7 +235,8 @@ void Game::box()
 	glVertex3f(-1.0f, -1.0f, 0.0f); // Bottom Left
 	glEnd();
 }
-void Game::rectangle(){
+void Game::rectangle()
+{
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_LINE_LOOP);
 	glVertex3f(-2.5f, 1.0f, 0.0f);	// Top Left
@@ -217,20 +245,107 @@ void Game::rectangle(){
 	glVertex3f(-2.5f, -1.0f, 0.0f); // Bottom Left
 	glEnd();
 }
+void Game::cross(bool filled){
+		double width = 0.15;
+	if (filled)
+		glBegin(GL_QUADS);
+	else
+		glBegin(GL_LINE_LOOP);
+	glVertex3f(-0.5f, width, 0.0f);	// Top Left
+	glVertex3f(0.5f, width, 0.0f);	 // Top Right
+	glVertex3f(0.5f, -width, 0.0f);	// Bottom Right
+	glVertex3f(-0.5f, -width, 0.0f); // Bottom Left
+	glEnd();
+	glPushMatrix();
+	glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
+	if (filled)
+		glBegin(GL_QUADS);
+	else
+		glBegin(GL_LINE_LOOP);
+	glVertex3f(-0.5f, width, 0.0f);	// Top Left
+	glVertex3f(0.5f, width, 0.0f);	 // Top Right
+	glVertex3f(0.5f, -width, 0.0f);	// Bottom Right
+	glVertex3f(-0.5f, -width, 0.0f); // Bottom Left
+	glEnd();
+	glPopMatrix();
+}
+void Game::compass()
+{
+	glPushMatrix();
+	glTranslatef(-1.5f, 0.0f, 0.0f);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	this->cross(false);
 
+	//MINI TRIANGLE
+	glPushMatrix();
+		glScalef(0.12f, 0.12f, 0.0f);
+		glTranslatef(0.0f, 2.6f, 0.0f);
+		this->triangle(this->KEY_UP_ARROW_ACTIVE);
+	glPopMatrix();
+	// MINI SQUARE
+	glPushMatrix();
+		glScalef(0.12f, 0.12f, 0.0f);
+		glTranslatef(0.0f, -2.6f, 0.0f);
+		this->square(this->KEY_DOWN_ARROW_ACTIVE);
+	glPopMatrix();
+
+	// MINI PENTAGON
+	glPushMatrix();
+		glScalef(0.12f, 0.12f, 0.0f);
+		glTranslatef(-2.56f, 0.0f, 0.0f);
+		this->pentagon(this->KEY_LEFT_ARROW_ACTIVE);
+	glPopMatrix();
+
+	// MINI CIRCLE
+	glPushMatrix();
+		glScalef(0.12f, 0.12f, 0.0f);
+		glTranslatef(2.56f, 0.0f, 0.0f);
+		glColor3f(0.0f, 1.0f, 0.0f);
+		this->circle(this->KEY_RIGHT_ARROW_ACTIVE);
+	glPopMatrix();
+
+	glPushMatrix();
+		glScalef(0.35f, 0.35f, 0.0f);
+		glTranslatef(7.0f, 0.0f, 0.0f);
+		glColor3f(0.0f, 1.0f, 1.0f);
+		this->circle(this->KEY_SPACE_ACTIVE);
+	glPopMatrix();
+		glPushMatrix();
+		glScalef(0.35f, 0.35f, 0.0f);
+		glTranslatef(10.0f, 0.0f, 0.0f);
+		glColor3f(1.0f, 1.0f, 0.0f);
+		this->circle(this->KEY_RETURN_ACTIVE);
+	glPopMatrix();
+
+	glPopMatrix();
+}
 void Game::circle()
 {
-	// glBegin(GL_LINE_LOOP);
-	//    for(int i =0; i <= 300; i++){
-	//        double angle = 2 * PI * i / 300;
-	//        double x = cos(angle);
-	//        double y = sin(angle);
-	//        glVertex2d(x,y);
-	//    }
-	// glEnd();
-	// this code (mostly) copied from question:
+	this->circle(true);
+}
+void Game::circle(bool filled)
+{
+		//glBegin(GL_LINE_LOOP);
+		// for (int i = 0; i <= 300; i++)
+		// {
+		// 	double angle = 2 * PI * i / 300;
+		// 	double x = cos(angle);
+		// 	double y = sin(angle);
+		// 	glVertex2d(x, y);
+		// }
+		// glEnd();
+
 	double radius = 1;
-	glBegin(GL_POLYGON);
+
+	if (filled)
+	
+		glBegin(GL_POLYGON);
+
+	
+
+	else	
+		glBegin(GL_LINE_LOOP);
+	
 	double angle1 = 0.0;
 	glVertex2d(radius * cos(0.0), radius * sin(0.0));
 	static const int circle_points = 100;
@@ -245,9 +360,18 @@ void Game::circle()
 }
 void Game::pentagon()
 {
+	this->pentagon(true);
+}
+void Game::pentagon(bool filled)
+{
+	glRotatef(-54.0f, 0.0f, 0.0f, 1.0f);
+	glColor3f(1.0f, 0.0f, 1.0f);
 	float angleIncrement = 360.0f / 5.0f;
 	angleIncrement *= PI / 180.0f;
+	if ( filled)
 	glBegin(GL_TRIANGLE_FAN);
+	else
+		glBegin(GL_LINE_LOOP);
 	float angle = 0.0f;
 	double radius = 1;
 	for (int k = 0; k < 100; ++k)
@@ -270,7 +394,7 @@ void Game::user_screen()
 	switch (USER_CURRENT)
 	{
 	case TRIANGLE:
-		glColor3f(1.0f, 0.0f, 0.0f);
+
 		this->triangle();
 		break;
 	case CIRCLE:
@@ -278,12 +402,10 @@ void Game::user_screen()
 		this->circle();
 		break;
 	case SQUARE:
-		glColor3f(0.0f, 0.0f, 1.0f);
 		this->square();
 		break;
 	case PENTAGON:
-		glRotatef(-54.0f, 0.0f, 0.0f, 1.0f);
-		glColor3f(1.0f, 0.0f, 1.0f);
+
 		this->pentagon();
 		break;
 	}
@@ -295,18 +417,52 @@ void Game::user_screen()
 
 	glPopMatrix();
 }
-void Game::guest_screen(){
+void Game::guest_screen()
+{
 	glPushMatrix();
 	glTranslatef(1.5f, -1.0f, -6.0f);
 	this->box();
+	glTranslatef(1.5f, -1.0f, -6.0f);
+	// draw a triangle (in smooth coloring mode)
+	switch (GUST_CURRENT)
+	{
+	case TRIANGLE:
+
+		this->triangle();
+		break;
+	case CIRCLE:
+		glColor3f(0.0f, 1.0f, 0.0f);
+		this->circle();
+		break;
+	case SQUARE:
+		this->square();
+		break;
+	case PENTAGON:
+
+		this->pentagon();
+		break;
+	case UNKOWN:
+		float gray = 105.0 / 255.0;
+		glColor3f(gray,gray,gray);
+		glPushMatrix();
+		glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
+		glScalef(2.0f, 2.0f, 0.0f);
+		
+		this->cross(true);
+		glPopMatrix();
+		break;
+	}
+
+
 	glPopMatrix();
 }
-void Game::top_screen(){
+void Game::top_screen()
+{
 	glPushMatrix();
 	glTranslatef(-0.0f, 1.25f, -6.0f);
 	this->rectangle();
+	this->compass();
 	glPopMatrix();
-	
 }
 void Game::paint()
 {
@@ -352,29 +508,99 @@ void Game::key_down(SDL_Keycode key_code)
 	case SDLK_UP:
 		printf("UP Key Pressed\n");
 		this->on_key_up_arrow();
+		this->KEY_UP_ARROW_ACTIVE = true;
 		break;
 
 	case SDLK_DOWN:
 		printf("Down Key Pressed\n");
 		this->on_key_down_arrow();
+		this->KEY_DOWN_ARROW_ACTIVE = true;
 		break;
 
 	case SDLK_LEFT:
 		printf("Left Key Pressed\n");
 		this->on_key_left_arrow();
+		this->KEY_LEFT_ARROW_ACTIVE = true;
 		break;
 
 	case SDLK_RIGHT:
 		printf("Right Key Pressed\n");
 		this->on_key_right_arrow();
+		this->KEY_RIGHT_ARROW_ACTIVE = true;
 		break;
 	case SDLK_g:
 		this->SHOW_GRID = !SHOW_GRID;
 		break;
 	case SDLK_SPACE:
-		printf("Space Key Pressed\n");
+		this->KEY_SPACE_ACTIVE = true;
+		break;
+	case SDLK_RETURN:
+		this->KEY_RETURN_ACTIVE = true;
+		break;
+	case SDLK_F11:
+		
+		if(FULL_SCREEN){
+			SDL_SetWindowPosition(this->WINDOW, 100, 100);
+			SDL_RestoreWindow(this->WINDOW);
+			//SDL_SetWindowResizable(this->WINDOW, SDL_TRUE);
+			//SDL_SetWindowBordered(this->WINDOW, 1);
+			SDL_SetWindowSize(this->WINDOW,SCREEN_WIDTH, SCREEN_HEIGHT);
+			//SDL_SetWindowFullscreen(this->WINDOW,SDL_WINDOW_FULLSCREEN );
+		}
+		else {
+			SDL_SetWindowPosition(this->WINDOW, 0, 0);
+			//SDL_SetWindowResizable(this->WINDOW, SDL_FALSE);
+			//SDL_SetWindowBordered(this->WINDOW, 0);
+			SDL_SetWindowSize(this->WINDOW,MONITOR_WIDTH, MONITOR_HEIGHT);
+			//SDL_SetWindowFullscreen(this->WINDOW,0 );
+		}
+		this->FULL_SCREEN = !this->FULL_SCREEN;
+
+    SDL_ShowCursor(this->FULL_SCREEN);
+	
+		break;
+	default:
+		//Do nothing
+		break;
+	}
+}
+
+/**
+ * key down
+ * SDL_Keycode key_code
+ */
+void Game::key_up(SDL_Keycode key_code)
+{
+	switch (key_code)
+	{
+
+	case SDLK_UP:
+		this->KEY_UP_ARROW_ACTIVE = false;
 		break;
 
+	case SDLK_DOWN:
+		this->KEY_DOWN_ARROW_ACTIVE = false;
+		break;
+
+	case SDLK_LEFT:
+		this->KEY_LEFT_ARROW_ACTIVE = false;
+		break;
+
+	case SDLK_RIGHT:
+		this->KEY_RIGHT_ARROW_ACTIVE = false;
+		break;
+
+	case SDLK_SPACE:
+		this->KEY_SPACE_ACTIVE = false;
+		break;
+	case SDLK_RETURN:
+		this->KEY_RETURN_ACTIVE = false;
+		break;
+	case SDLK_F11:
+		// SDL_DisplayMode dm;
+		// SDL_RestoreWindow(this->WINDOW); //Incase it's maximized...
+		// SDL_SetWindowSize(this->WINDOW, dm.w, dm.h + 10);
+		// SDL_SetWindowPosition(this->WINDOW, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	default:
 		//Do nothing
 		break;
@@ -415,7 +641,7 @@ void Game::events(SDL_Event &event)
 			break;
 
 		case SDL_KEYUP:
-			//Todo Key up commands
+			this->key_up(event.key.keysym.sym);
 			break;
 
 		} //end switch(event.type)

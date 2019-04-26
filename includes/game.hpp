@@ -24,7 +24,8 @@ enum SHAPE{
 	TRIANGLE,
 	CIRCLE,
 	SQUARE,
-	PENTAGON
+	PENTAGON,
+	UNKOWN
 };
 class Game
 {
@@ -34,11 +35,20 @@ private:
 
 	const int SCREEN_WIDTH = 800;
 	const int SCREEN_HEIGHT = 600;
+	int MONITOR_WIDTH=1920;
+	int MONITOR_HEIGHT=1080;
 	const char *TITLE = "Lesson 01";
 	bool KEEP_ALIVE = true;
 	bool SHOW_GRID = false;
 	SHAPE USER_CURRENT = TRIANGLE;
-
+	SHAPE GUST_CURRENT = 	UNKOWN;
+	bool KEY_UP_ARROW_ACTIVE = false;
+	bool KEY_DOWN_ARROW_ACTIVE = false;
+	bool KEY_LEFT_ARROW_ACTIVE = false;
+	bool KEY_RIGHT_ARROW_ACTIVE = false;
+	bool KEY_SPACE_ACTIVE = false;
+	bool KEY_RETURN_ACTIVE = false;
+	bool FULL_SCREEN = false;
 public:
 	Game();
 	~Game();
@@ -50,19 +60,27 @@ public:
 	void paint();
 	void events( SDL_Event &event );
 	void key_down(SDL_Keycode key_code);
+	void key_up(SDL_Keycode key_code);
 	void resize ( int width, int height );
 	void triangle();
+	void triangle(bool filled);
 	void square();
+	void square(bool filled);
 	void circle();
+	void circle(bool filled);
 	void pentagon();
+	void pentagon(bool filled);
 	void rectangle();
-	
+	void cross(bool filled);
+	void compass();
+
 	void on_key_up_arrow();
 	void on_key_down_arrow();
 	void on_key_left_arrow();
 	void on_key_right_arrow();
 	void on_key_space();
 	void on_key_enter();
+
 	void top_screen();
 	void user_screen();
 	void guest_screen();

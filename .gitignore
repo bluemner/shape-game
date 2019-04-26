@@ -35,4 +35,4 @@ bin/
 *.dSYM/
 
 *.pdb
-.vcode/ipch
+.vscode/ipch
