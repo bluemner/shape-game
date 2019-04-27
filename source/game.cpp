@@ -668,6 +668,7 @@ void Game::on_key_right_arrow()
 }
 void Game::on_key_space()
 {
+	
 }
 void Game::on_key_enter()
 {

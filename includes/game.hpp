@@ -17,16 +17,10 @@
 #include <string>
 #include <math.h>
 #define PI 3.14159265359
+#include "../includes/common.hpp"
 namespace betacore
 {
-enum SHAPE{
-	NONE,
-	TRIANGLE,
-	CIRCLE,
-	SQUARE,
-	PENTAGON,
-	UNKOWN
-};
+
 class Game
 {
 private:
