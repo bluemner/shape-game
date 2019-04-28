@@ -1,13 +1,15 @@
 OUTPUT_DIR= bin
 COMPILER = g++
-COMPILER_FLAGS=-w
+COMPILER_FLAGS=-w -std=c++11
 SOURCE_DIR = source/
 INCLUDES_DIR =-I includes/
 LINKER_FLAGS =-lSDL2 -lGL -lGLU -lpthread
 LIBRARY_FLAGS= -std=c++11 -c -fPIC -shared
 SERVER_LIB=$(OUTPUT_DIR)/server.so
 CLIENT_LIB=$(OUTPUT_DIR)/client.so
-all: game | client_driver | server_driver
+all: game | driver
+
+driver: client_driver | server_driver
 
 game:	$(SOURCE_DIR)game.cpp | make_dir
 	$(COMPILER) $(INCLUDES_DIR) $(SOURCE_DIR)game.cpp $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OUTPUT_DIR)/game.out

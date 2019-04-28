@@ -111,7 +111,7 @@ int Game::initGL()
 
 	if (error != GL_NO_ERROR)
 	{
-		printf("OpenGL Error %s\n", gluErrorString(error));
+		printf("OpenGL Error %s\n");
 		result = -1;
 		return result;
 	}
@@ -123,11 +123,6 @@ int Game::initGL()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(
-			45.0f,
-			(GLfloat)this->SCREEN_WIDTH / (GLfloat)this->SCREEN_HEIGHT,
-			0.1f,
-			100.0f);
 	glMatrixMode(GL_MODELVIEW);
 
 	return result;
@@ -487,7 +482,6 @@ void Game::resize(int width, int height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 	glMatrixMode(GL_MODELVIEW);
 }
 
