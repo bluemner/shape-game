@@ -101,13 +101,12 @@ std::vector<std::string> Client::explode(std::string &message){
 
 SHAPE Client::parse(const std::string &message)
 {
-	std::string tmp = message;
-	SHAPE result = decode(tmp);
+	SHAPE result = decode(message);
 	if (result != UNKOWN)
 		return result;
 	if (_mode == EVE)
 		return UNKOWN;
-	return decode(crypt(tmp));
+	return decode(crypt(message));
 }
 SHAPE Client::decode(const std::string &shape)
 {

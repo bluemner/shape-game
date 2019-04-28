@@ -17,9 +17,11 @@ Game::Game(MODE mode,
 					 int port,
 					 std::string url): ME(mode)
 {
+
 	this->TITLE = Parser::mode(mode).c_str();
 	
-	printf("%s\t%d\t%d\n",this->TITLE, this->MONITOR_WIDTH, this->MONITOR_HEIGHT);
+	printf("%s\t%s\t%d\t%d\n",this->TITLE, Parser::mode(mode).c_str(), 
+		this->MONITOR_WIDTH, this->MONITOR_HEIGHT);
 	if (init())
 	{
 		printf("Error loading init\n");
@@ -427,6 +429,16 @@ void Game::user_screen()
 
 		this->pentagon();
 		break;
+	case UNKOWN:
+		float gray = 105.0 / 255.0;
+		glColor3f(gray, gray, gray);
+		glPushMatrix();
+		glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
+		glScalef(2.0f, 2.0f, 0.0f);
+
+		this->cross(true);
+		glPopMatrix();
+		break;
 	}
 
 	// glTranslatef(3.0f, 0.0f, 0.0f); // Move Right 3 Units
@@ -697,15 +709,46 @@ void Game::on_key_enter()
 }
 void Game::update(SHAPE &s, MODE &m)
 {
-	if (m == ME)
+	if (m == ME || (ME==EVE && m == ALICE))
 		this->USER_CURRENT = s;
 	else
 		this->GUST_CURRENT = s;
 }
 } // namespace betacore
 
+
+void ussage(){
+	std::cout
+		<< "Ussage:\n" 
+		<< "\tMODE: 1-3\n"
+		<< "\t\t1)Alice\n"
+		<< "\t\t2)Bob\n"
+		<< "\t\t2)Eve\n"
+		<< "\tport\n"
+		<< "\taddress"
+		<< std::endl;
+}
 int main(int argc, char *argv[])
 {
-	betacore::Game game(betacore::BOB, 4444, "localhost");
+
+	if(argc < 4){
+		ussage();
+		return 1;
+	}
+	betacore::MODE mode = betacore::EVE;
+	int a = atoi(argv[1]);
+	std::cout  << "Running mode" << a << std::endl;
+	switch( a){
+		case 1:
+			mode = betacore::ALICE;
+			break;
+		case 2: 
+			mode = betacore::BOB;
+			break;
+		default:
+			mode = betacore::EVE;
+			break;
+	}
+	betacore::Game game(mode, atoi(argv[2]),argv[3]);
 	return 0;
 }

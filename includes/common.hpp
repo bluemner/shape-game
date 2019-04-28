@@ -34,6 +34,8 @@ class Parser
 			return "ALICE";
 		case BOB:
 			return "BOB";
+		case EVE:
+			return "EVE";
 		default:
 			return "END";
 		}

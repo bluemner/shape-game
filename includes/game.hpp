@@ -36,8 +36,8 @@ private:
 	const char *TITLE ;
 	bool KEEP_ALIVE = true;
 	bool SHOW_GRID = false;
-	SHAPE USER_CURRENT = TRIANGLE;
-	SHAPE GUST_CURRENT = 	UNKOWN;
+	SHAPE USER_CURRENT = NONE;
+	SHAPE GUST_CURRENT = 	NONE;
 	MODE ME;
 	bool KEY_UP_ARROW_ACTIVE = false;
 	bool KEY_DOWN_ARROW_ACTIVE = false;
