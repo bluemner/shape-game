@@ -17,7 +17,9 @@
 #include <string>
 #include <math.h>
 #define PI 3.14159265359
-#include "../includes/common.hpp"
+#include "common.hpp"
+#include "client.hpp"
+
 namespace betacore
 {
 
@@ -31,11 +33,12 @@ private:
 	const int SCREEN_HEIGHT = 600;
 	int MONITOR_WIDTH=1920;
 	int MONITOR_HEIGHT=1080;
-	const char *TITLE = "Lesson 01";
+	const char *TITLE ;
 	bool KEEP_ALIVE = true;
 	bool SHOW_GRID = false;
 	SHAPE USER_CURRENT = TRIANGLE;
 	SHAPE GUST_CURRENT = 	UNKOWN;
+	MODE ME;
 	bool KEY_UP_ARROW_ACTIVE = false;
 	bool KEY_DOWN_ARROW_ACTIVE = false;
 	bool KEY_LEFT_ARROW_ACTIVE = false;
@@ -43,8 +46,11 @@ private:
 	bool KEY_SPACE_ACTIVE = false;
 	bool KEY_RETURN_ACTIVE = false;
 	bool FULL_SCREEN = false;
+	Client* client = nullptr;
 public:
-	Game();
+	Game(MODE mode,
+	  int port, 
+		std::string url);
 	~Game();
 	int init();
 	int initGL();
@@ -67,7 +73,7 @@ public:
 	void rectangle();
 	void cross(bool filled);
 	void compass();
-
+	
 	void on_key_up_arrow();
 	void on_key_down_arrow();
 	void on_key_left_arrow();
@@ -78,6 +84,8 @@ public:
 	void top_screen();
 	void user_screen();
 	void guest_screen();
+
+	void update(SHAPE &s,MODE &m);
 };
 } // namespace betacore
 #endif

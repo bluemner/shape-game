@@ -32,10 +32,11 @@ private:
 	std::string _url;
 	MODE _mode;
 	int _client_socket;
-	std::function<void(SHAPE &S)> _update;
+	std::function<void(SHAPE &S, MODE &M)> _update;
 	struct sockaddr_in _server_address;
 	struct hostent *_server;
 	std::map<std::string, std::string> lookup;
+	std::vector<std::string> explode(std::string &message);
 	std::string encode(const SHAPE &shape);
 	std::string crypt(const std::string &shape);
 
@@ -55,7 +56,12 @@ private:
 	void stop();
 
 public:
-	Client(MODE mode, int port, std::string url, std::function<void(SHAPE &S)> &update);
+	Client(
+		MODE mode,
+	  int port, 
+		std::string url, 
+		std::function<void(SHAPE &S, MODE &M)> &update);
+	~Client();
 	void kill();
 	bool running();
 	void send(bool encrypt, SHAPE shape);

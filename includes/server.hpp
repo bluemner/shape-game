@@ -39,6 +39,7 @@ private:
 	void shutdown();
 	void listener();
 	void read_socket(int client);
+	void forward_message(int client,char buffer[BUFFER_LENGTH] );
 public:
 	Server(int port);
 	void off();
