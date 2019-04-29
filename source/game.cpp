@@ -1,20 +1,40 @@
 #include "game.hpp"
-
+void gluPerspective(double fovy,double aspect, double zNear, double zFar)
+{
+ // Start in projection mode.
+ glMatrixMode(GL_PROJECTION);
+ glLoadIdentity();
+ double xmin, xmax, ymin, ymax;
+ ymax = zNear * tan(fovy * M_PI / 360.0);
+ ymin = -ymax;
+ xmin = ymin * aspect;
+ xmax = ymax * aspect;
+ glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
+}
 namespace betacore
 {
-Game::Game()
+Game::Game(MODE mode,
+					 int port,
+					 std::string url): ME(mode)
 {
 
-	printf("%d\t%d\n", this->MONITOR_WIDTH,this->MONITOR_HEIGHT);
+	this->TITLE = Parser::mode(mode).c_str();
+	
+	printf("%s\t%s\t%d\t%d\n",this->TITLE, Parser::mode(mode).c_str(), 
+		this->MONITOR_WIDTH, this->MONITOR_HEIGHT);
 	if (init())
 	{
 		printf("Error loading init\n");
 		return;
 	}
+	using namespace std::placeholders;
+	std::function<void(SHAPE & s, MODE & m)> fn =
+			std::bind(&Game::update, this, _1, _2);
+	this->client = new Client(mode, port, url, fn);
 	// SDL_DisplayMode DM;
 	// SDL_GetCurrentDisplayMode(0, &DM);
-	this->MONITOR_HEIGHT=1080;
-	this->MONITOR_WIDTH=1920;
+	this->MONITOR_HEIGHT = 1080;
+	this->MONITOR_WIDTH = 1920;
 	SDL_Event event;
 
 	while (this->KEEP_ALIVE)
@@ -25,8 +45,11 @@ Game::Game()
 	}
 	close();
 }
-Game::~Game() {
-
+Game::~Game()
+{
+	if (this->client != nullptr)
+		delete this->client;
+	this->client = nullptr;
 }
 
 int Game::init()
@@ -111,7 +134,7 @@ int Game::initGL()
 
 	if (error != GL_NO_ERROR)
 	{
-		printf("OpenGL Error %s\n", gluErrorString(error));
+		printf("OpenGL Error %s\n");
 		result = -1;
 		return result;
 	}
@@ -122,7 +145,6 @@ int Game::initGL()
 	glViewport(0, 0, this->SCREEN_WIDTH, this->SCREEN_HEIGHT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-
 	gluPerspective(
 			45.0f,
 			(GLfloat)this->SCREEN_WIDTH / (GLfloat)this->SCREEN_HEIGHT,
@@ -245,8 +267,9 @@ void Game::rectangle()
 	glVertex3f(-2.5f, -1.0f, 0.0f); // Bottom Left
 	glEnd();
 }
-void Game::cross(bool filled){
-		double width = 0.15;
+void Game::cross(bool filled)
+{
+	double width = 0.15;
 	if (filled)
 		glBegin(GL_QUADS);
 	else
@@ -278,43 +301,43 @@ void Game::compass()
 
 	//MINI TRIANGLE
 	glPushMatrix();
-		glScalef(0.12f, 0.12f, 0.0f);
-		glTranslatef(0.0f, 2.6f, 0.0f);
-		this->triangle(this->KEY_UP_ARROW_ACTIVE);
+	glScalef(0.12f, 0.12f, 0.0f);
+	glTranslatef(0.0f, 2.6f, 0.0f);
+	this->triangle(this->KEY_UP_ARROW_ACTIVE);
 	glPopMatrix();
 	// MINI SQUARE
 	glPushMatrix();
-		glScalef(0.12f, 0.12f, 0.0f);
-		glTranslatef(0.0f, -2.6f, 0.0f);
-		this->square(this->KEY_DOWN_ARROW_ACTIVE);
+	glScalef(0.12f, 0.12f, 0.0f);
+	glTranslatef(0.0f, -2.6f, 0.0f);
+	this->square(this->KEY_DOWN_ARROW_ACTIVE);
 	glPopMatrix();
 
 	// MINI PENTAGON
 	glPushMatrix();
-		glScalef(0.12f, 0.12f, 0.0f);
-		glTranslatef(-2.56f, 0.0f, 0.0f);
-		this->pentagon(this->KEY_LEFT_ARROW_ACTIVE);
+	glScalef(0.12f, 0.12f, 0.0f);
+	glTranslatef(-2.56f, 0.0f, 0.0f);
+	this->pentagon(this->KEY_LEFT_ARROW_ACTIVE);
 	glPopMatrix();
 
 	// MINI CIRCLE
 	glPushMatrix();
-		glScalef(0.12f, 0.12f, 0.0f);
-		glTranslatef(2.56f, 0.0f, 0.0f);
-		glColor3f(0.0f, 1.0f, 0.0f);
-		this->circle(this->KEY_RIGHT_ARROW_ACTIVE);
+	glScalef(0.12f, 0.12f, 0.0f);
+	glTranslatef(2.56f, 0.0f, 0.0f);
+	glColor3f(0.0f, 1.0f, 0.0f);
+	this->circle(this->KEY_RIGHT_ARROW_ACTIVE);
 	glPopMatrix();
 
 	glPushMatrix();
-		glScalef(0.35f, 0.35f, 0.0f);
-		glTranslatef(7.0f, 0.0f, 0.0f);
-		glColor3f(0.0f, 1.0f, 1.0f);
-		this->circle(this->KEY_SPACE_ACTIVE);
+	glScalef(0.35f, 0.35f, 0.0f);
+	glTranslatef(7.0f, 0.0f, 0.0f);
+	glColor3f(0.0f, 1.0f, 1.0f);
+	this->circle(this->KEY_SPACE_ACTIVE);
 	glPopMatrix();
-		glPushMatrix();
-		glScalef(0.35f, 0.35f, 0.0f);
-		glTranslatef(10.0f, 0.0f, 0.0f);
-		glColor3f(1.0f, 1.0f, 0.0f);
-		this->circle(this->KEY_RETURN_ACTIVE);
+	glPushMatrix();
+	glScalef(0.35f, 0.35f, 0.0f);
+	glTranslatef(10.0f, 0.0f, 0.0f);
+	glColor3f(1.0f, 1.0f, 0.0f);
+	this->circle(this->KEY_RETURN_ACTIVE);
 	glPopMatrix();
 
 	glPopMatrix();
@@ -325,27 +348,25 @@ void Game::circle()
 }
 void Game::circle(bool filled)
 {
-		//glBegin(GL_LINE_LOOP);
-		// for (int i = 0; i <= 300; i++)
-		// {
-		// 	double angle = 2 * PI * i / 300;
-		// 	double x = cos(angle);
-		// 	double y = sin(angle);
-		// 	glVertex2d(x, y);
-		// }
-		// glEnd();
+	//glBegin(GL_LINE_LOOP);
+	// for (int i = 0; i <= 300; i++)
+	// {
+	// 	double angle = 2 * PI * i / 300;
+	// 	double x = cos(angle);
+	// 	double y = sin(angle);
+	// 	glVertex2d(x, y);
+	// }
+	// glEnd();
 
 	double radius = 1;
 
 	if (filled)
-	
+
 		glBegin(GL_POLYGON);
 
-	
-
-	else	
+	else
 		glBegin(GL_LINE_LOOP);
-	
+
 	double angle1 = 0.0;
 	glVertex2d(radius * cos(0.0), radius * sin(0.0));
 	static const int circle_points = 100;
@@ -368,8 +389,8 @@ void Game::pentagon(bool filled)
 	glColor3f(1.0f, 0.0f, 1.0f);
 	float angleIncrement = 360.0f / 5.0f;
 	angleIncrement *= PI / 180.0f;
-	if ( filled)
-	glBegin(GL_TRIANGLE_FAN);
+	if (filled)
+		glBegin(GL_TRIANGLE_FAN);
 	else
 		glBegin(GL_LINE_LOOP);
 	float angle = 0.0f;
@@ -408,6 +429,16 @@ void Game::user_screen()
 
 		this->pentagon();
 		break;
+	case UNKOWN:
+		float gray = 105.0 / 255.0;
+		glColor3f(gray, gray, gray);
+		glPushMatrix();
+		glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
+		glScalef(2.0f, 2.0f, 0.0f);
+
+		this->cross(true);
+		glPopMatrix();
+		break;
 	}
 
 	// glTranslatef(3.0f, 0.0f, 0.0f); // Move Right 3 Units
@@ -443,16 +474,15 @@ void Game::guest_screen()
 		break;
 	case UNKOWN:
 		float gray = 105.0 / 255.0;
-		glColor3f(gray,gray,gray);
+		glColor3f(gray, gray, gray);
 		glPushMatrix();
 		glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
 		glScalef(2.0f, 2.0f, 0.0f);
-		
+
 		this->cross(true);
 		glPopMatrix();
 		break;
 	}
-
 
 	glPopMatrix();
 }
@@ -486,7 +516,6 @@ void Game::resize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-
 	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 	glMatrixMode(GL_MODELVIEW);
 }
@@ -533,31 +562,35 @@ void Game::key_down(SDL_Keycode key_code)
 		break;
 	case SDLK_SPACE:
 		this->KEY_SPACE_ACTIVE = true;
+		this->on_key_space();
 		break;
 	case SDLK_RETURN:
 		this->KEY_RETURN_ACTIVE = true;
+			this->on_key_enter();
 		break;
 	case SDLK_F11:
-		
-		if(FULL_SCREEN){
+
+		if (FULL_SCREEN)
+		{
 			SDL_SetWindowPosition(this->WINDOW, 100, 100);
 			SDL_RestoreWindow(this->WINDOW);
 			//SDL_SetWindowResizable(this->WINDOW, SDL_TRUE);
 			//SDL_SetWindowBordered(this->WINDOW, 1);
-			SDL_SetWindowSize(this->WINDOW,SCREEN_WIDTH, SCREEN_HEIGHT);
+			SDL_SetWindowSize(this->WINDOW, SCREEN_WIDTH, SCREEN_HEIGHT);
 			//SDL_SetWindowFullscreen(this->WINDOW,SDL_WINDOW_FULLSCREEN );
 		}
-		else {
+		else
+		{
 			SDL_SetWindowPosition(this->WINDOW, 0, 0);
 			//SDL_SetWindowResizable(this->WINDOW, SDL_FALSE);
 			//SDL_SetWindowBordered(this->WINDOW, 0);
-			SDL_SetWindowSize(this->WINDOW,MONITOR_WIDTH, MONITOR_HEIGHT);
+			SDL_SetWindowSize(this->WINDOW, MONITOR_WIDTH, MONITOR_HEIGHT);
 			//SDL_SetWindowFullscreen(this->WINDOW,0 );
 		}
 		this->FULL_SCREEN = !this->FULL_SCREEN;
 
-    SDL_ShowCursor(this->FULL_SCREEN);
-	
+		SDL_ShowCursor(this->FULL_SCREEN);
+
 		break;
 	default:
 		//Do nothing
@@ -668,14 +701,54 @@ void Game::on_key_right_arrow()
 }
 void Game::on_key_space()
 {
+	this->client->send(false,this->USER_CURRENT);
 }
 void Game::on_key_enter()
 {
+	this->client->send(true,this->USER_CURRENT);
+}
+void Game::update(SHAPE &s, MODE &m)
+{
+	if (m == ME || (ME==EVE && m == ALICE))
+		this->USER_CURRENT = s;
+	else
+		this->GUST_CURRENT = s;
 }
 } // namespace betacore
 
+
+void ussage(){
+	std::cout
+		<< "Ussage:\n" 
+		<< "\tMODE: 1-3\n"
+		<< "\t\t1)Alice\n"
+		<< "\t\t2)Bob\n"
+		<< "\t\t2)Eve\n"
+		<< "\tport\n"
+		<< "\taddress"
+		<< std::endl;
+}
 int main(int argc, char *argv[])
 {
-	betacore::Game game;
+
+	if(argc < 4){
+		ussage();
+		return 1;
+	}
+	betacore::MODE mode = betacore::EVE;
+	int a = atoi(argv[1]);
+	std::cout  << "Running mode" << a << std::endl;
+	switch( a){
+		case 1:
+			mode = betacore::ALICE;
+			break;
+		case 2: 
+			mode = betacore::BOB;
+			break;
+		default:
+			mode = betacore::EVE;
+			break;
+	}
+	betacore::Game game(mode, atoi(argv[2]),argv[3]);
 	return 0;
 }
