@@ -1,4 +1,6 @@
 #include "game.hpp"
+
+// Adding this a fix if gluPerspective is not defined, opengl 3+ I think?
 void gluPerspective(double fovy,double aspect, double zNear, double zFar)
 {
  // Start in projection mode.
@@ -31,8 +33,7 @@ Game::Game(MODE mode,
 	std::function<void(SHAPE & s, MODE & m)> fn =
 			std::bind(&Game::update, this, _1, _2);
 	this->client = new Client(mode, port, url, fn);
-	// SDL_DisplayMode DM;
-	// SDL_GetCurrentDisplayMode(0, &DM);
+
 	this->MONITOR_HEIGHT = 1080;
 	this->MONITOR_WIDTH = 1920;
 	SDL_Event event;
@@ -70,11 +71,9 @@ int Game::init()
 
 		//Create window
 		int videoFlags = SDL_WINDOW_OPENGL;
-		//videoFlags |= SDL_WINDOW_FULLSCREEN;
 		videoFlags |= SDL_WINDOW_SHOWN;
 		videoFlags |= SDL_WINDOW_RESIZABLE;
-		//videoFlags |= SDL_WINDOW_BORDERLESS;
-		// videoFlags |= SDL_WINDOW_INPUT_GRABBED;
+	
 
 		this->WINDOW = SDL_CreateWindow(
 				this->TITLE,
@@ -165,9 +164,7 @@ void Game::close()
 void Game::grid()
 {
 	glPushMatrix();
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE,gray);
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, white);
-	//glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 64);
+
 	glTranslatef(0.0f, 0.0f, 0.0f);
 	glLineWidth(2.5);
 	glColor3f(1.0, 1.0, 1.0);
@@ -348,15 +345,6 @@ void Game::circle()
 }
 void Game::circle(bool filled)
 {
-	//glBegin(GL_LINE_LOOP);
-	// for (int i = 0; i <= 300; i++)
-	// {
-	// 	double angle = 2 * PI * i / 300;
-	// 	double x = cos(angle);
-	// 	double y = sin(angle);
-	// 	glVertex2d(x, y);
-	// }
-	// glEnd();
 
 	double radius = 1;
 
@@ -387,8 +375,8 @@ void Game::pentagon(bool filled)
 {
 	glRotatef(-54.0f, 0.0f, 0.0f, 1.0f);
 	glColor3f(1.0f, 0.0f, 1.0f);
-	float angleIncrement = 360.0f / 5.0f;
-	angleIncrement *= PI / 180.0f;
+	float angle_increment = 360.0f / 5.0f;
+	angle_increment *= PI / 180.0f;
 	if (filled)
 		glBegin(GL_TRIANGLE_FAN);
 	else
@@ -398,7 +386,7 @@ void Game::pentagon(bool filled)
 	for (int k = 0; k < 100; ++k)
 	{
 		glVertex3f(radius * cos(angle), radius * sin(angle), 0.0f);
-		angle += angleIncrement;
+		angle += angle_increment;
 	}
 	glEnd();
 }
@@ -408,10 +396,8 @@ void Game::user_screen()
 	glTranslatef(-1.5f, -1.0f, -6.0f);
 	this->box();
 
-	//this->box();
-	//glTranslatef(-1.5f, 0.0f, -6.0f); // Move Left 1.5 Units And Into The Screen 6.0
 	glTranslatef(-1.5f, -1.0f, -6.0f);
-	// draw a triangle (in smooth coloring mode)
+
 	switch (USER_CURRENT)
 	{
 	case TRIANGLE:
@@ -441,10 +427,7 @@ void Game::user_screen()
 		break;
 	}
 
-	// glTranslatef(3.0f, 0.0f, 0.0f); // Move Right 3 Units
-	// // draw a square (quadrilateral)
 
-	// glColor3f(0.5f, 0.5f, 1.0f); // set color to a blue shade.
 
 	glPopMatrix();
 }
@@ -454,7 +437,7 @@ void Game::guest_screen()
 	glTranslatef(1.5f, -1.0f, -6.0f);
 	this->box();
 	glTranslatef(1.5f, -1.0f, -6.0f);
-	// draw a triangle (in smooth coloring mode)
+
 	switch (GUST_CURRENT)
 	{
 	case TRIANGLE:
@@ -574,18 +557,13 @@ void Game::key_down(SDL_Keycode key_code)
 		{
 			SDL_SetWindowPosition(this->WINDOW, 100, 100);
 			SDL_RestoreWindow(this->WINDOW);
-			//SDL_SetWindowResizable(this->WINDOW, SDL_TRUE);
-			//SDL_SetWindowBordered(this->WINDOW, 1);
 			SDL_SetWindowSize(this->WINDOW, SCREEN_WIDTH, SCREEN_HEIGHT);
-			//SDL_SetWindowFullscreen(this->WINDOW,SDL_WINDOW_FULLSCREEN );
+			
 		}
 		else
 		{
 			SDL_SetWindowPosition(this->WINDOW, 0, 0);
-			//SDL_SetWindowResizable(this->WINDOW, SDL_FALSE);
-			//SDL_SetWindowBordered(this->WINDOW, 0);
 			SDL_SetWindowSize(this->WINDOW, MONITOR_WIDTH, MONITOR_HEIGHT);
-			//SDL_SetWindowFullscreen(this->WINDOW,0 );
 		}
 		this->FULL_SCREEN = !this->FULL_SCREEN;
 
@@ -629,11 +607,6 @@ void Game::key_up(SDL_Keycode key_code)
 	case SDLK_RETURN:
 		this->KEY_RETURN_ACTIVE = false;
 		break;
-	case SDLK_F11:
-		// SDL_DisplayMode dm;
-		// SDL_RestoreWindow(this->WINDOW); //Incase it's maximized...
-		// SDL_SetWindowSize(this->WINDOW, dm.w, dm.h + 10);
-		// SDL_SetWindowPosition(this->WINDOW, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	default:
 		//Do nothing
 		break;

@@ -56,14 +56,29 @@ private:
 	void stop();
 
 public:
+
+	/*
+	 * Create an instance of client
+	 */
 	Client(
 		MODE mode,
 	  int port, 
 		std::string url, 
 		std::function<void(SHAPE &S, MODE &M)> &update);
 	~Client();
+
+	/* 
+	 * Kill the server
+	 */
 	void kill();
+	/*
+	 * Running
+	 */
 	bool running();
+
+	/*
+	 * Send the shape encrypted or raw
+	 */
 	void send(bool encrypt, SHAPE shape);
 };
 } // namespace betacore
